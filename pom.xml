@@ -76,13 +76,13 @@
 
     <properties>
         <java.version>8</java.version>
-        <spring.version>5.3.18</spring.version>
+        <spring.version>5.3.20</spring.version>
         <spring.security.version>5.7.2</spring.security.version>
         <spring.boot.version>2.7.1</spring.boot.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.24</lombok.version>
         <servlet.api.version>4.0.1</servlet.api.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <mockito.version>4.4.0</mockito.version>
+        <mockito.version>4.6.1</mockito.version>
         <jupiter.version>5.8.2</jupiter.version>
         <snakeyaml.version>1.30</snakeyaml.version>
     </properties>

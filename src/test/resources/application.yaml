@@ -1,0 +1,16 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        first:
+          issuer-uri: https://localhost:8888/some/idp
+          jwk-set-uri: https://localhost:23080/some/idp/protocol/openid-connect/certs
+          roles-claim-name: little_roles
+          roles-authority-prefix: LITTLE_ROLE_
+        other:
+          issuer-uri: https://localhost:8888/other/idp
+          jws-algorithm: PS512
+          public-key-location: classpath:my-key.pub
+
+
+

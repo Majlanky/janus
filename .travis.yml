@@ -1,0 +1,15 @@
+addons:
+  sonarcloud:
+    organization: "majlanky"
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.sonar/cache
+
+language: java
+
+jdk: openjdk11
+
+install: true
+script: chmod 777 mvnw && ./mvnw clean install sonar:sonar -P ITs -Dsonar.login=${SONAR_TOKEN}

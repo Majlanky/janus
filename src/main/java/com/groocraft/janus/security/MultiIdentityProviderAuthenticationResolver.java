@@ -16,6 +16,7 @@
 
 package com.groocraft.janus.security;
 
+import com.groocraft.janus.exception.UnknownIssuerException;
 import com.nimbusds.jwt.JWTParser;
 
 import org.springframework.lang.NonNull;
@@ -28,10 +29,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -41,7 +40,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
-import java.util.Base64;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.AllArgsConstructor;
@@ -50,14 +48,13 @@ import lombok.extern.slf4j.Slf4j;
 import static org.springframework.security.oauth2.jwt.JwtClaimNames.ISS;
 
 /**
- * Authentication resolver for JWT supporting multitenancy. Authentication resolves if the given JWT is issued by known issuer and than
+ * Authentication resolver for JWT supporting multitenancy. Authentication resolves if the given JWT is issued by known issuer and then
  * pick proper provider to check validity and resolve {@link org.springframework.security.core.Authentication} based on the configuration
  * of the known IdP.
  *
  * @author mbabicky-ext
  */
 @Slf4j
-@Component
 @AllArgsConstructor
 public class MultiIdentityProviderAuthenticationResolver implements AuthenticationManagerResolver<HttpServletRequest> {
 
@@ -80,7 +77,7 @@ public class MultiIdentityProviderAuthenticationResolver implements Authenticati
         if (idp != null) {
             return authenticationManagers.computeIfAbsent(issuer, i -> jwtAuthProvider(idp)::authenticate);
         } else {
-            throw new InvalidBearerTokenException(String.format("Untrusted issuer %s", issuer));
+            throw new UnknownIssuerException(issuer);
         }
     }
 
@@ -118,39 +115,18 @@ public class MultiIdentityProviderAuthenticationResolver implements Authenticati
         } else {
             try {
                 RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-                    .generatePublic(new X509EncodedKeySpec(getKeySpec(configuration.readPublicKey())));
+                        .generatePublic(new X509EncodedKeySpec(KeySpec.getDecoded(configuration.readPublicKey())));
                 jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey)
-                    .signatureAlgorithm(SignatureAlgorithm.from(configuration.getJwsAlgorithm())).build();
+                        .signatureAlgorithm(SignatureAlgorithm.from(configuration.getJwsAlgorithm())).build();
             } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException ex) {
                 throw new IllegalArgumentException("Unable to configure identity provider " + configuration.getId(), ex);
             }
         }
         JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
-        authenticationProvider.setJwtAuthenticationConverter(customJwtAuthenticationConverter(configuration));
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(JanusJwtGrantedAuthoritiesConverter.from(configuration));
+        authenticationProvider.setJwtAuthenticationConverter(converter);
         return authenticationProvider;
     }
 
-    /**
-     * @param keyValue PEM formatted key. Must not be {@literal null}
-     * @return Base64 containing key stripped from PEM header and footer
-     */
-    private byte[] getKeySpec(@NonNull String keyValue) {
-        keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
-        return Base64.getMimeDecoder().decode(keyValue);
-    }
-
-    /**
-     * @param configuration must not be {@literal null}
-     * @return JWT to {@link org.springframework.security.core.Authentication} converter for the given {@code configuration}. Throws an
-     * exception otherwise.
-     */
-    @NonNull
-    private JwtAuthenticationConverter customJwtAuthenticationConverter(@NonNull IdentityProvider configuration) {
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(configuration.getRolesAuthorityPrefix());
-        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName(configuration.getRolesClaimName());
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-        return jwtAuthenticationConverter;
-    }
 }

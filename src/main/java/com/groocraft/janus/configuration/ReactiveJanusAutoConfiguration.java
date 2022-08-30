@@ -16,31 +16,28 @@
 
 package com.groocraft.janus.configuration;
 
-import com.groocraft.janus.customizer.WithMultiIdPsCustomizer;
+import com.groocraft.janus.customizer.ReactiveWithMultiIdPsCustomizer;
 import com.groocraft.janus.security.IdentityProviders;
-import com.groocraft.janus.security.MultiIdentityProviderAuthenticationResolver;
+import com.groocraft.janus.security.ReactiveMultiIdentityProviderAuthenticationResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
- * Injects all Janus beans to the context.
+ * Injects all reactive Janus beans to the context.
  *
  * @author Majlanky
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
-@EnableConfigurationProperties({OAuth2ResourceServerProperties.class})
-@ConditionalOnClass({BearerTokenAuthenticationToken.class})
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({MultiIdentityProviderAuthenticationResolver.class, IdentityProviders.class, WithMultiIdPsCustomizer.class})
-public class JanusAutoConfiguration {
+@ConditionalOnClass({EnableWebFluxSecurity.class, WebFilterChainProxy.class})
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
+@Import({ReactiveMultiIdentityProviderAuthenticationResolver.class, IdentityProviders.class, ReactiveWithMultiIdPsCustomizer.class})
+public class ReactiveJanusAutoConfiguration {
 }

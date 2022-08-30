@@ -16,28 +16,26 @@
 
 package com.groocraft.janus.customizer;
 
-import com.groocraft.janus.security.MultiIdentityProviderAuthenticationResolver;
+import com.groocraft.janus.security.ReactiveMultiIdentityProviderAuthenticationResolver;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * Customizer for {@link OAuth2ResourceServerConfigurer} that adds support for multi IdP configuration and validation.
+ * Customizer for {@link ServerHttpSecurity.OAuth2ResourceServerSpec} that adds support for multi IdP configuration and validation.
  *
  * @author Majlanky
  */
 @RequiredArgsConstructor
-public class WithMultiIdPsCustomizer implements Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> {
+public class ReactiveWithMultiIdPsCustomizer implements Customizer<ServerHttpSecurity.OAuth2ResourceServerSpec> {
 
-    private @NonNull MultiIdentityProviderAuthenticationResolver resolver;
+    private @NonNull ReactiveMultiIdentityProviderAuthenticationResolver resolver;
 
     @Override
-    public void customize(OAuth2ResourceServerConfigurer<HttpSecurity> httpSecurityOAuth2ResourceServerConfigurer) {
-        httpSecurityOAuth2ResourceServerConfigurer.authenticationManagerResolver(resolver);
+    public void customize(ServerHttpSecurity.OAuth2ResourceServerSpec oAuth2ResourceServerSpec) {
+        oAuth2ResourceServerSpec.authenticationManagerResolver(resolver);
     }
-
 }

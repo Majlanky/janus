@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.groocraft.janus.test;
+package com.groocraft.janus.exception;
 
-import com.groocraft.janus.security.IdentityProviders;
+import org.springframework.lang.NonNull;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+/**
+ * @author Majlanky
+ */
+public class UnknownIssuerException extends InvalidBearerTokenException {
 
-@Configuration
-@EnableConfigurationProperties(IdentityProviders.class)
-public class TestConfiguration {
+    public UnknownIssuerException(@NonNull String issuer) {
+        super(String.format("Untrusted issuer %s", issuer));
+    }
 }

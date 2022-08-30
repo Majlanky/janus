@@ -24,7 +24,6 @@ import org.mockito.MockedConstruction;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -45,10 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
@@ -134,9 +131,8 @@ class MultiIdentityProviderAuthenticationResolverTest {
 
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
 
-        try(MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) -> {
-            when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet));
-        })) {
+        try (MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) ->
+                when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet)))) {
             AuthenticationManager manager = resolver.resolve(request);
             BearerTokenAuthenticationToken authenticationToken = mock(BearerTokenAuthenticationToken.class);
             when(authenticationToken.getToken()).thenReturn(differentToken);
@@ -158,9 +154,8 @@ class MultiIdentityProviderAuthenticationResolverTest {
 
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
 
-        try(MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) -> {
-            when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(differentJwkSet));
-        })) {
+        try (MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) ->
+                when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(differentJwkSet)))) {
             AuthenticationManager manager = resolver.resolve(request);
             BearerTokenAuthenticationToken authenticationToken = mock(BearerTokenAuthenticationToken.class);
             when(authenticationToken.getToken()).thenReturn(token);
@@ -170,7 +165,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void testAuthenticationManagerValidatesByLocalPublicKey() throws IOException {
+    void testAuthenticationManagerValidatesByLocalPublicKey() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
@@ -189,13 +184,13 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void testAuthenticationManagerAllowsWithValidSignatureAndParsesProperlyWithPublicKeyValidation() throws IOException {
+    void testAuthenticationManagerAllowsWithValidSignatureAndParsesProperlyWithPublicKeyValidation() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
         when(identityProviders.getKnownIdPs()).thenReturn(knownIdPs);
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
-        when(identityProvider.getPublicKeyLocation()).thenReturn(new ClassPathResource("signature_key.pem"));//FIXME add invalid signature
+        when(identityProvider.getPublicKeyLocation()).thenReturn(new ClassPathResource("signature_key.pem"));
         when(identityProvider.getRolesClaimName()).thenReturn("roles");
 
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
@@ -224,9 +219,8 @@ class MultiIdentityProviderAuthenticationResolverTest {
 
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
 
-        try(MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) -> {
-            when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet));
-        })) {
+        try (MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) ->
+                when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet)))) {
             AuthenticationManager manager = resolver.resolve(request);
             BearerTokenAuthenticationToken authenticationToken = mock(BearerTokenAuthenticationToken.class);
             when(authenticationToken.getToken()).thenReturn(token);

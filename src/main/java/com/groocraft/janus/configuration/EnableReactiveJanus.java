@@ -16,9 +16,9 @@
 
 package com.groocraft.janus.configuration;
 
-import com.groocraft.janus.customizer.WithMultiIdPsCustomizer;
+import com.groocraft.janus.customizer.ReactiveWithMultiIdPsCustomizer;
 import com.groocraft.janus.security.IdentityProviders;
-import com.groocraft.janus.security.MultiIdentityProviderAuthenticationResolver;
+import com.groocraft.janus.security.ReactiveMultiIdentityProviderAuthenticationResolver;
 
 import org.springframework.context.annotation.Import;
 
@@ -28,12 +28,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Non-parametric annotation to turn on Janus manually when auto-configuration is off, or for test purposes.
+ * Non-parametric annotation to turn on reactive Janus manually when auto-configuration is off, or for test purposes.
  *
  * @author Majlanky
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({MultiIdentityProviderAuthenticationResolver.class, IdentityProviders.class, WithMultiIdPsCustomizer.class})
-public @interface EnableJanus {
+@Import({ReactiveMultiIdentityProviderAuthenticationResolver.class, IdentityProviders.class, ReactiveWithMultiIdPsCustomizer.class})
+public @interface EnableReactiveJanus {
 }

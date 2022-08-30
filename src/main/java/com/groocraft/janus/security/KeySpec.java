@@ -16,19 +16,26 @@
 
 package com.groocraft.janus.security;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.lang.NonNull;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Base64;
 
-class IdentityProviderTest {
+/**
+ * Helper class which provides method to get PEMs formatted key content.
+ *
+ * @author Majlanky
+ */
+public class KeySpec {
 
-    @Test
-    void testInvalidPublicKeyLocationThrowsException(){
-        IdentityProvider identityProvider = new IdentityProvider();
-        identityProvider.setPublicKeyLocation(new ClassPathResource("non_existing.pem"));
-        assertThrows(InvalidConfigurationPropertyValueException.class, identityProvider::readPublicKey);
+    private KeySpec() {}
+
+    /**
+     * @param keyValue PEM formatted key. Must not be {@literal null}
+     * @return Base64 containing key stripped from PEM header and footer
+     */
+    public static byte[] getDecoded(@NonNull String keyValue) {
+        keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
+        return Base64.getMimeDecoder().decode(keyValue);
     }
 
 }

@@ -65,6 +65,7 @@ spring:
           roles-claim-name: realm_roles
           roles-authority-prefix: REALM_ROLE
         third:
+          issuer-uri: ...
           jws-algorithm: PS512
           public-key-location: 'classpath:key.pub'
 ```

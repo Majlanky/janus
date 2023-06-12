@@ -5,7 +5,9 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=com.groocraft%3Ajanus&metric=security_rating)](https://sonarcloud.io/dashboard?id=com.groocraft%3Ajanus)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.groocraft%3Ajanus&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.groocraft%3Ajanus)
 [![Known Vulnerabilities](https://snyk.io/test/github/majlanky/janus/badge.svg)](https://snyk.io/test/github/majlanky/janus)  
-![](https://img.shields.io/badge/compatibility-JDK8%20and%20higher-purple)
+![](https://img.shields.io/badge/compatibility-JDK17%20and%20higher-purple)
+![](https://img.shields.io/badge/compatibility-Native%20builds-purple)
+![](https://img.shields.io/badge/compatibility-Spring%20Boot%203+-purple)
 ![](https://img.shields.io/badge/Servlet%20security-ready-brightgreen)
 ![](https://img.shields.io/badge/Reactive%20security-ready-brightgreen)
 
@@ -21,9 +23,6 @@ Artifacts releases are available on maven central (and on pages indexing central
 
 ## Wiki
 This README contains only basic information about project. For more or detailed information, visit the [wiki](https://github.com/Majlanky/janus/wiki)
-
-## Limitations and coming soon
-Janus does not support reactive stack right now. But it is planned to the next release to support it.
 
 ## How to start
 First things first we have to add Maven dependency
@@ -76,6 +75,7 @@ Authentication object.
 
 There are more ways how to configure web security. WebSecurityAdapterConfigurer was standard for a long time, SecurityFilterChain is the 
 new approach. The following provides examples how use Janus with both of them where we prefer the newer one.
+WARNING: From version 2.0.0 only SecurityFilterChain is present as Spring removed WebSecurityAdapterConfigurer
 
 ##### SecurityFilterChain approach
 ```java
@@ -96,25 +96,7 @@ public class WebSecurityConfig {
 }
 ```
 
-##### WebSecurityConfigurerAdapter approach
-```java
-public class WebSecurityConfig extends JanusWebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) {
-        http.authorizeRequests().anyRequest().fullyAuthenticated().and()
-            .httpBasic().disable()
-            .formLogin().disable()
-            .oauth2ResourceServer(withMultiIdPs())
-            .cors(Customizer.withDefaults())
-            .sessionManagement(c -> c
-                .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-    }
-}
-```
-
-### Configuration of servlet based web security ![](https://img.shields.io/badge/From%20version-1.1.0-green)
+### Configuration of reactive based web security ![](https://img.shields.io/badge/From%20version-1.1.0-green)
 
 With reactive security there is only one way to configured it, and it is very similar to the first way at the previous chapter:
 

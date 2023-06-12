@@ -32,12 +32,13 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,7 +88,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void authenticationManagerIsResolvedForKnownIssuer(){
+    void authenticationManagerIsResolvedForKnownIssuer() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
@@ -103,7 +104,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void authenticationManagerIsCachedByIssuer(){
+    void authenticationManagerIsCachedByIssuer() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
@@ -119,7 +120,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void testAuthenticationManagerValidatesByIssuer(){
+    void testAuthenticationManagerValidatesByIssuer() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
@@ -132,7 +133,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
 
         try (MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) ->
-                when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet)))) {
+            when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet)))) {
             AuthenticationManager manager = resolver.resolve(request);
             BearerTokenAuthenticationToken authenticationToken = mock(BearerTokenAuthenticationToken.class);
             when(authenticationToken.getToken()).thenReturn(differentToken);
@@ -142,7 +143,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void testAuthenticationManagerValidatesByJwkSet(){
+    void testAuthenticationManagerValidatesByJwkSet() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
@@ -155,7 +156,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
 
         try (MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) ->
-                when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(differentJwkSet)))) {
+            when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(differentJwkSet)))) {
             AuthenticationManager manager = resolver.resolve(request);
             BearerTokenAuthenticationToken authenticationToken = mock(BearerTokenAuthenticationToken.class);
             when(authenticationToken.getToken()).thenReturn(token);
@@ -207,7 +208,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
     }
 
     @Test
-    void testAuthenticationManagerAllowsWithValidSignatureAndParsesProperlyWithJwkSetValidation(){
+    void testAuthenticationManagerAllowsWithValidSignatureAndParsesProperlyWithJwkSetValidation() {
         Map<String, IdentityProvider> knownIdPs = new HashMap<>();
         String issuer = "https://localhost:8888/some/idp";
         knownIdPs.put(issuer, identityProvider);
@@ -220,7 +221,7 @@ class MultiIdentityProviderAuthenticationResolverTest {
         MultiIdentityProviderAuthenticationResolver resolver = new MultiIdentityProviderAuthenticationResolver(identityProviders);
 
         try (MockedConstruction<RestTemplate> restTemplate = mockConstruction(RestTemplate.class, (m, c) ->
-                when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet)))) {
+            when(m.exchange(any(), eq(String.class))).thenReturn(ResponseEntity.ok(jwkSet)))) {
             AuthenticationManager manager = resolver.resolve(request);
             BearerTokenAuthenticationToken authenticationToken = mock(BearerTokenAuthenticationToken.class);
             when(authenticationToken.getToken()).thenReturn(token);

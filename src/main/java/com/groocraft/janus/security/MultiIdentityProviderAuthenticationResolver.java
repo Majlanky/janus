@@ -32,7 +32,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -42,6 +41,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
